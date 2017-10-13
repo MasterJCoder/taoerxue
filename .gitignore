@@ -1,0 +1,11 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea/
+tex-app/app.iml
+tex-bean/bean.iml
+tex-common/common.iml
+tex-dao/dao.iml
+tex-manager/manager.iml
+tex-parent/parent.iml
+tex-rest/rest.iml
+tex-util/util.iml
+tex-web/web.iml

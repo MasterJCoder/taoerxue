@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.taoerxue.mapper.MyCourseInfoMapper">
+    <resultMap id="BaseResultMap" type="com.taoerxue.pojo.CourseInfo" >
+        <id column="id" property="id" jdbcType="INTEGER" />
+        <result column="name" property="name" jdbcType="VARCHAR" />
+        <result column="e_id" property="eId" jdbcType="INTEGER" />
+        <result column="e_name" property="eName" jdbcType="VARCHAR" />
+        <result column="parent_type_id" property="parentTypeId" jdbcType="INTEGER" />
+        <result column="parent_type_name" property="parentTypeName" jdbcType="VARCHAR" />
+        <result column="type_id" property="typeId" jdbcType="INTEGER" />
+        <result column="type_name" property="typeName" jdbcType="VARCHAR" />
+        <result column="price" property="price" jdbcType="DECIMAL" />
+        <result column="count" property="count" jdbcType="INTEGER" />
+        <result column="photo" property="photo" jdbcType="VARCHAR" />
+        <result column="target" property="target" jdbcType="VARCHAR" />
+        <result column="duration" property="duration" jdbcType="INTEGER" />
+        <result column="student_level_id" property="studentLevelId" jdbcType="INTEGER" />
+        <result column="student_level_name" property="studentLevelName" jdbcType="VARCHAR" />
+        <result column="student_type_names" property="studentTypeNames" jdbcType="VARCHAR" />
+        <result column="student_type_ids" property="studentTypeIds" jdbcType="INTEGER" />
+        <result column="characteristic" property="characteristic" jdbcType="VARCHAR" />
+        <result column="province_id" property="provinceId" jdbcType="INTEGER" />
+        <result column="province_name" property="provinceName" jdbcType="VARCHAR" />
+        <result column="city_name" property="cityName" jdbcType="VARCHAR" />
+        <result column="city_id" property="cityId" jdbcType="INTEGER" />
+        <result column="area_id" property="areaId" jdbcType="INTEGER" />
+        <result column="area_name" property="areaName" jdbcType="VARCHAR" />
+        <result column="address" property="address" jdbcType="VARCHAR" />
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="status" property="status" jdbcType="INTEGER" />
+        <result column="lng" property="lng" jdbcType="DECIMAL" />
+        <result column="lat" property="lat" jdbcType="DECIMAL" />
+        <result column="submit_time" property="submitTime" jdbcType="TIMESTAMP" />
+        <result column="through_time" property="throughTime" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <update id="updateStatus">
+        UPDATE course_info
+        SET status = #{newStatus}
+        WHERE id = #{id} AND status = #{oldStatus}
+    </update>
+    <select id="listByTeacherId" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+        SELECT
+            c.id,
+            c.photo,
+            c.e_name,
+            c.address,
+            c.name,
+            c.price,
+            c.city_name,
+            c.area_name
+        FROM course_teacher t
+            LEFT JOIN course_info c ON t.course_id = c.id
+        WHERE t.teacher_id = #{id} AND c.status = 2
+    </select>
+    <select id="countByTeacherId" resultType="java.lang.Integer" parameterType="java.lang.Integer">
+        SELECT count(c.id)
+        FROM course_teacher t
+            LEFT JOIN course_info c ON t.course_id = c.id
+        WHERE t.teacher_id = #{id} AND c.status = 2
+    </select>
+    <select id="list" parameterType="com.taoerxue.qo.CourseInfoQuery" resultMap="BaseResultMap">
+        select *
+        from course_info
+        <where>
+            <if test="status !=null">status=#{status}</if>
+            <if test="eid!=null">and e_id=#{eid}</if>
+            <if test="like!=null">and (name like CONCAT('%',#{like},'%') or e_name like CONCAT('%',#{like},'%') )</if>
+            <if test="parentTypeId !=null">and parent_type_id=#{parentTypeId}</if>
+        </where>
+        <if test="order !=null">order by #{order}</if>
+        <if test="sort !=null">#{sort}</if>
+
+    </select>
+    <select id="listNameLike" resultType="java.lang.String">
+        SELECT name
+        FROM course_info AS r1
+            JOIN
+            (SELECT CEIL(RAND() *
+                         (SELECT MAX(id)
+                          FROM course_info)) AS id)
+                AS r2
+        WHERE r1.id >= r2.id AND r1.status = 2 AND name LIKE CONCAT('%', #{like}, '%')
+        ORDER BY r1.id ASC
+        LIMIT 10
+    </select>
+    <select id="collectList" resultMap="BaseResultMap">
+        SELECT course.*
+        FROM app_user_course_collection collection LEFT JOIN course_info course ON collection.course_id = course.id
+        WHERE course.status = 2 AND collection.user_id = #{id}
+        ORDER BY collection.create_time
+    </select>
+    <select id="monthlyCount" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM course_info
+        WHERE DATE_FORMAT(through_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m') AND status = 2
+    </select>
+</mapper>

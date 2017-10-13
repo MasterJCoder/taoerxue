@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.taoerxue.mapper.MyEducationInstitutionMapper">
+    <resultMap id="BaseResultMap" type="com.taoerxue.pojo.EducationInstitution">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="type_id" property="typeId" jdbcType="INTEGER"/>
+        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="province_id" property="provinceId" jdbcType="INTEGER"/>
+        <result column="province_name" property="provinceName" jdbcType="VARCHAR"/>
+        <result column="city_id" property="cityId" jdbcType="INTEGER"/>
+        <result column="city_name" property="cityName" jdbcType="VARCHAR"/>
+        <result column="area_id" property="areaId" jdbcType="INTEGER"/>
+        <result column="area_name" property="areaName" jdbcType="VARCHAR"/>
+        <result column="address" property="address" jdbcType="VARCHAR"/>
+        <result column="license_number" property="licenseNumber" jdbcType="CHAR"/>
+        <result column="manager_name" property="managerName" jdbcType="VARCHAR"/>
+        <result column="manager_address" property="managerAddress" jdbcType="VARCHAR"/>
+        <result column="manager_phone" property="managerPhone" jdbcType="CHAR"/>
+        <result column="photo" property="photo" jdbcType="CHAR"/>
+        <result column="telephone" property="telephone" jdbcType="VARCHAR"/>
+        <result column="lng" property="lng" jdbcType="DECIMAL"/>
+        <result column="lat" property="lat" jdbcType="DECIMAL"/>
+        <result column="company_name" property="companyName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <update id="updateStatus">
+        UPDATE education_institution
+        SET status = #{newStatus}
+        WHERE id = #{id} AND status = #{oldStatus}
+    </update>
+
+
+    <select id="getStatus" parameterType="java.lang.Integer" resultType="java.lang.Integer">
+        SELECT status
+        FROM education_institution
+        WHERE id = #{id}
+    </select>
+    <select id="getName" resultType="java.lang.String" parameterType="java.lang.Integer">
+        SELECT name
+        FROM education_institution
+        WHERE id = #{id}
+    </select>
+    <select id="list" parameterType="com.taoerxue.qo.EducationInstitutionQuery" resultMap="BaseResultMap">
+        SELECT * FROM education_institution
+        <where>
+            <if test="areaId !=null">
+                area_id=#{areaId}
+            </if>
+            <if test="status !=null">
+                and status=#{status}
+            </if>
+            <if test="like !=null">
+                and (name like CONCAT('%',#{like},'%') or company_name like CONCAT('%',#{like},'%'))
+            </if>
+        </where>
+        <if test="order !=null">order by #{order}</if>
+        <if test="sort !=null">#{sort}</if>
+    </select>
+    <select id="listNameLike" resultType="java.lang.String">
+        SELECT name
+        FROM education_institution AS r1
+            JOIN
+            (SELECT CEIL(RAND() *
+                         (SELECT MAX(id)
+                          FROM education_institution)) AS id)
+                AS r2
+        WHERE r1.id >= r2.id AND r1.status = 2 AND name LIKE CONCAT('%', #{like}, '%')
+        ORDER BY r1.id ASC
+        LIMIT 10
+    </select>
+    <select id="collectList" resultMap="BaseResultMap">
+        SELECT institution.*
+        FROM app_user_institution_collection collection LEFT JOIN education_institution institution
+                ON collection.e_id = institution.id
+        WHERE institution.status = 2 AND collection.user_id = #{id}
+        ORDER BY collection.create_time
+    </select>
+    <select id="monthlyCount" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM education_institution
+        WHERE DATE_FORMAT(update_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m') AND status = 2
+    </select>
+
+</mapper>

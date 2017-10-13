@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.taoerxue.mapper.MyCourseTeacherMapper">
+    <resultMap id="BaseResultMap" type="com.taoerxue.pojo.CourseTeacher">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="course_id" property="courseId" jdbcType="INTEGER"/>
+        <result column="course_name" property="courseName" jdbcType="VARCHAR"/>
+        <result column="teacher_id" property="teacherId" jdbcType="INTEGER"/>
+        <result column="teacher_name" property="teacherName" jdbcType="VARCHAR"/>
+        <result column="type_id" property="typeId" jdbcType="INTEGER"/>
+        <result column="type_name" property="typeName" jdbcType="VARCHAR"/>
+        <result column="parent_type_name" property="parentTypeName" jdbcType="VARCHAR"/>
+        <result column="parent_type_id" property="parentTypeId" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="java.util.List">
+        INSERT INTO course_teacher (course_id, course_name, teacher_id, teacher_name, type_id, type_name,
+        parent_type_name, parent_type_id)
+        VALUES
+        <foreach collection="list" item="item" index="index"
+                 separator=",">
+            (
+            #{item.courseId},#{item.courseName},
+            #{item.teacherId},#{item.teacherName},
+            #{item.typeId},#{item.typeName},
+            #{item.parentTypeName},#{item.parentTypeId}
+            )
+        </foreach>
+    </insert>
+
+    <select id="listByCourseIdAndEId" resultMap="BaseResultMap">
+        SELECT
+            teacher_id,
+            teacher_name
+        FROM course_teacher
+        WHERE course_id = #{courseId}
+    </select>
+</mapper>

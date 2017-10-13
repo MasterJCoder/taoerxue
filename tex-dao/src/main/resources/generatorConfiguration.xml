@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+
+
+    <!-- 驱动jar包所在位置 -->
+    <classPathEntry
+            location="/Users/lizhihui/.m2/repository/mysql/mysql-connector-java/5.1.32/mysql-connector-java-5.1.32.jar"/>
+    <!--如果你想生成example对象,targetRuntime='Mybatis3'，不想生成的话就用MyBatis3Simple-->
+    <context id="context" targetRuntime="MyBatis3" defaultModelType="flat">
+        <property name="autoDelimitKeywords" value="false"/>
+        <property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+
+        <commentGenerator>
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+            <!--是否阻止生成的注释加入时间戳，suppressAllComments为false时，下面标签才生效-->
+            <property name="suppressDate" value="false"/>
+        </commentGenerator>
+        <!-- 数据库配置  -->
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://139.129.207.12:3306/taoerxue?characterEncoding=utf-8"
+                        userId="root"
+                        password="sdfbv445"/>
+
+        <javaTypeResolver>
+            <property name="forceBigDecimals" value="false"/>
+        </javaTypeResolver>
+        <!-- pojo的生成配置 -->
+        <javaModelGenerator targetPackage="com.taoerxue.pojo" targetProject="src/main/java">
+            <!--<property name="constructorBased" value="true"/>-->
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- Mapper XML 配置 -->
+        <sqlMapGenerator targetPackage="com.taoerxue.mapper" targetProject="ehatch-dao/src/main/java">
+            <property name="enableSubPackages" value="true"/>
+        </sqlMapGenerator>
+
+        <!-- Mapper Interface 配置 -->
+        <javaClientGenerator targetPackage="com.taoerxue.mapper" targetProject="blueCollar-dao/src/main/java"
+                             type="XMLMAPPER">
+            <property name="enableSubPackages" value="true"/>
+        </javaClientGenerator>
+        <!-- 表配置  -->
+        <table tableName="news">
+        </table>
+    </context>
+
+</generatorConfiguration>

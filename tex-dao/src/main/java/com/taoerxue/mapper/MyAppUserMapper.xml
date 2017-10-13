@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.taoerxue.mapper.MyAppUserMapper">
+    <resultMap id="BaseResultMap" type="com.taoerxue.pojo.AppUser">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="phone" property="phone" jdbcType="CHAR"/>
+        <result column="password" property="password" jdbcType="CHAR"/>
+        <result column="create_time" property="createTime" jdbcType="TIMESTAMP"/>
+        <result column="update_time" property="updateTime" jdbcType="TIMESTAMP"/>
+        <result column="salt" property="salt" jdbcType="CHAR"/>
+        <result column="student_type_id" property="studentTypeId" jdbcType="INTEGER"/>
+        <result column="nickname" property="nickname" jdbcType="VARCHAR"/>
+        <result column="photo" property="photo" jdbcType="VARCHAR"/>
+        <result column="expectation" property="expectation" jdbcType="INTEGER"/>
+        <result column="login_time" property="loginTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+
+    <select id="list" parameterType="com.taoerxue.qo.AppUserQuery" resultMap="BaseResultMap">
+        SELECT *
+        FROM app_user
+        <where>
+            <if test="studentTypeId != null">
+                student_type_id=#{studentTypeId}
+            </if>
+            <if test="expectation != null">
+                AND expectation|#{expectation} =#{expectation}
+            </if>
+        </where>
+        order by #{order} #{sort}
+    </select>
+    <select id="getByPhone" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT *
+        FROM app_user
+        WHERE phone = #{phone}
+    </select>
+    <select id="monthlyCount" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM app_user
+        WHERE DATE_FORMAT(create_time, '%Y%m') = DATE_FORMAT(CURDATE(), '%Y%m')
+    </select>
+</mapper>

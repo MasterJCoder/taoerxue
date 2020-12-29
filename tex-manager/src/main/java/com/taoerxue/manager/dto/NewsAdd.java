@@ -21,7 +21,7 @@ public class NewsAdd {
 
     @NotBlank(message = "请上传文章图片素材")
     private String photo;
-    @NotBlank(message = "文章内容不能为空")
+    @NotBlank(message = "文章内容不能为空1")
     private String riches;
 
     public String getRiches() {
